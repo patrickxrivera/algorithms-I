@@ -10,18 +10,18 @@ const App = {
   shortestPath: [],
 
   exhaustiveSearch(set) {
-    let currentDistance = 0;
+    let currDistance = 0;
 
     for (let i = 0; i < set.length - 1; i++) {
       const cityA = set[i];
       const cityB = set[i + 1];
 
-      currentDistance += calcDistance(cityA, cityB);
+      currDistance += calcDistance(cityA, cityB);
     }
 
-    if (currentDistance >= App.shortestDistance) return;
+    if (currDistance >= App.shortestDistance) return;
 
-    App.shortestDistance = currentDistance;
+    App.shortestDistance = currDistance;
     App.shortestPath = set;
   },
 

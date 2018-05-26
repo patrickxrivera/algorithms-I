@@ -8,6 +8,9 @@ const NUMBER_OF_CITIES = 100;
 ============ initCities ============
 */
 
+const initCities = (FILE_NAME) =>
+  R.pipe(readFile, sliceCities, splitCities, formatCities)(FILE_NAME);
+
 const readFile = (FILE_NAME) =>
   fs
     .readFileSync(FILE_NAME)
@@ -17,13 +20,11 @@ const readFile = (FILE_NAME) =>
 const sliceCities = (citiesRaw) =>
   citiesRaw.slice(0 + HEADER_LENGTH, NUMBER_OF_CITIES + HEADER_LENGTH);
 
-const formatCities = (citiesUnformatted) =>
-  citiesUnformatted.map((city) => {
-    const values = city.split(' ');
-    return { name: values[0], x: values[1], y: values[2] };
-  });
+const splitCities = (cities) => R.map(R.split(' '), cities);
 
-const initCities = (FILE_NAME) => R.pipe(readFile, sliceCities, formatCities)(FILE_NAME);
+const formatCities = (values) => R.map(getValues, values);
+
+const getValues = ([name, x, y]) => ({ name, x, y });
 
 /*
 ============ calcDistance ============
@@ -36,11 +37,11 @@ const calcDistance = (cityA, cityB) =>
 ============ formatShortestPath ============
 */
 
-const renderAcc = (acc) => (typeof acc === 'object' ? acc.name : acc);
+const formatShortestPath = (path) => path.reduce(format);
 
 const format = (acc, curr) => `${renderAcc(acc)} ---> ${curr.name}`;
 
-const formatShortestPath = (path) => path.reduce(format);
+const renderAcc = (acc) => (typeof acc === 'object' ? acc.name : acc);
 
 module.exports = {
   initCities,
