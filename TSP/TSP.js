@@ -1,20 +1,22 @@
+const fs = require('fs');
+
 const getPermutations = require('../minilab/HeapsAlg.js');
+const { calcDistance, formatShortestPath } = require('./helpers');
 
-const cities = [
-  { name: 'Denver', x: 500, y: 500 },
-  { name: 'Salt Lake City', x: 300, y: 500 },
-  { name: 'Cheyenne', x: 500, y: 600 },
-  { name: 'Santa Fe', x: 500, y: 350 }
-];
+const HEADER_LENGTH = 7;
+const NUMBER_OF_CITIES = 11;
 
-const calcDistance = (cityA, cityB) =>
-  Math.sqrt(((cityA.x - cityB.x) ^ 2) + ((cityA.y + cityB.y) ^ 2));
+const citiesRaw = fs
+  .readFileSync('usa115475.tsp')
+  .toString()
+  .split('\n');
 
-const renderAcc = (acc) => (typeof acc === 'object' ? acc.name : acc);
+const citiesUnformatted = citiesRaw.slice(0 + HEADER_LENGTH, NUMBER_OF_CITIES + HEADER_LENGTH);
 
-const format = (acc, curr) => `${renderAcc(acc)} ---> ${curr.name}`;
-
-const formatShortestPath = (path) => path.reduce(format);
+const cities = citiesUnformatted.map((city) => {
+  const values = city.split(' ');
+  return { name: values[0], x: values[1], y: values[2] };
+});
 
 const App = {
   shortestDistance: Infinity,
@@ -34,13 +36,41 @@ const App = {
 
     App.shortestDistance = currentDistance;
     App.shortestPath = set;
+  },
+
+  tsp(cities) {
+    const originalCitiesLength = cities.length;
+    const path = [cities.shift()];
+    const visited = {};
+
+    while (path.length < originalCitiesLength) {
+      const startCity = path[path.length - 1];
+      let currShortestDistance = Infinity;
+      let currShortestDistanceCity;
+
+      cities.forEach((currCity) => {
+        if (visited[currCity.name]) return;
+
+        const currDistance = calcDistance(startCity, currCity);
+
+        if (currDistance < currShortestDistance) {
+          currShortestDistance = currDistance;
+          currShortestDistanceCity = currCity;
+        }
+      });
+
+      path.push(currShortestDistanceCity);
+      visited[currShortestDistanceCity.name] = true;
+    }
+
+    App.shortestPath = path;
   }
 };
 
 (function init() {
-  getPermutations(cities, App);
+  App.tsp(cities);
+
   const formattedShortestPath = formatShortestPath(App.shortestPath);
 
-  console.log(`Shortest distance is ${Math.round(App.shortestDistance)}km`);
   console.log(`Shortest path is ${formattedShortestPath}`);
 })();
