@@ -20,7 +20,7 @@ const readFile = (FILE_NAME) =>
 const sliceCities = (citiesRaw) =>
   citiesRaw.slice(0 + HEADER_LENGTH, NUMBER_OF_CITIES + HEADER_LENGTH);
 
-// TODO: user R.transduce to DRY up the sequential map operations
+// TODO: use R.transduce to DRY up the sequential map operations
 const splitCities = (cities) => R.map(R.split(' '), cities);
 
 const formatCities = (values) => R.map(getValues, values);
