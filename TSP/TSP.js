@@ -1,26 +1,13 @@
-const fs = require('fs');
-
 const getPermutations = require('../minilab/HeapsAlg.js');
-const { calcDistance, formatShortestPath } = require('./helpers');
+const { initCities, calcDistance, formatShortestPath } = require('./helpers');
 
-const HEADER_LENGTH = 7;
-const NUMBER_OF_CITIES = 11;
+const FILE_NAME = 'usa115475.tsp';
 
-const citiesRaw = fs
-  .readFileSync('usa115475.tsp')
-  .toString()
-  .split('\n');
-
-const citiesUnformatted = citiesRaw.slice(0 + HEADER_LENGTH, NUMBER_OF_CITIES + HEADER_LENGTH);
-
-const cities = citiesUnformatted.map((city) => {
-  const values = city.split(' ');
-  return { name: values[0], x: values[1], y: values[2] };
-});
+const cities = initCities(FILE_NAME);
 
 const App = {
   shortestDistance: Infinity,
-  shortestPath: null,
+  shortestPath: [],
 
   exhaustiveSearch(set) {
     let currentDistance = 0;
@@ -38,7 +25,7 @@ const App = {
     App.shortestPath = set;
   },
 
-  tsp(cities) {
+  nearestNeighborsSearch(cities) {
     const originalCitiesLength = cities.length;
     const path = [cities.shift()];
     const visited = {};
@@ -67,10 +54,10 @@ const App = {
   }
 };
 
-(function init() {
-  App.tsp(cities);
+(function init(cities) {
+  App.nearestNeighborsSearch(cities);
 
-  const formattedShortestPath = formatShortestPath(App.shortestPath);
+  const shortestPath = formatShortestPath(App.shortestPath);
 
-  console.log(`Shortest path is ${formattedShortestPath}`);
-})();
+  console.log(`Shortest path is ${shortestPath}`);
+})(cities);

@@ -4,7 +4,8 @@
   "description": "",
   "main": "TSP.js",
   "dependencies": {
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "ramda": "^0.25.0"
   },
   "devDependencies": {},
   "scripts": {
